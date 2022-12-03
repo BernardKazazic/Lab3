@@ -1,0 +1,19 @@
+{
+  "name": "web2_lab3",
+  "version": "1.0.0",
+  "description": "Laboratorijska vjezba iz naprednog weba",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/BernardKazazic/WEB2_Lab3.git"
+  },
+  "author": "Bernard Kazazic",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BernardKazazic/WEB2_Lab3/issues"
+  },
+  "homepage": "https://github.com/BernardKazazic/WEB2_Lab3#readme"
+}
