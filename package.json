@@ -8,12 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/BernardKazazic/WEB2_Lab3.git"
+    "url": "git+ssh://git@github.com/BernardKazazic/Lab3.git"
   },
   "author": "Bernard Kazazic",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/BernardKazazic/WEB2_Lab3/issues"
+    "url": "https://github.com/BernardKazazic/Lab3/issues"
   },
-  "homepage": "https://github.com/BernardKazazic/WEB2_Lab3#readme"
+  "homepage": "https://github.com/BernardKazazic/Lab3#readme"
 }
