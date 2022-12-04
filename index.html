@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Napredni web lab3</title>
+    <link rel="shortcut icon" href="#">
+    <style>
+        canvas {
+            border: 1px solid black;
+            background-color: white;
+        }
+    </style>
+</head>
+<body onload="startGame()">
+    <h1>Treca laboratorijska vjezba</h1>
+    <div id="game"></div>
+</body>
+<script>
+    let elemNum = Math.floor(Math.random() * 5 + 1);
+    let clickedElems = 0;
+    const canvasWidth = 480;
+    const canvasHeight = 270;
+    const rectangleWidth = 30;
+    const rectangleHeight = 30;
+    let speedX = [];
+    let speedY = [];
+    let startX = [];
+    let startY = [];
+    var myGamePieces = [];
+    var audio = new Audio('./hitmarker');
+
+    var myGameArea = {
+            canvas : document.createElement("canvas"),
+            start : function() {
+                this.canvas.width = canvasWidth;
+                this.canvas.height = canvasHeight;
+                this.context = this.canvas.getContext("2d");
+                document.getElementById("game").appendChild(this.canvas);
+                this.frameNo = 0;
+                this.interval = setInterval(updateGameArea, 20);
+            },
+            clear : function() {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            },
+            stop : function() {
+                clearInterval(this.interval);
+            }
+        }
+
+    function component(width, height, color, x, y, speedX, speedY, type) {
+        this.type = type;
+        this.width = width;
+        this.height = height;
+        this.speedX = speedX;
+        this.speedY = speedY;
+        this.x = x;
+        this.y = y;
+        this.update = function() {
+            ctx = myGameArea.context;
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.fillStyle = color;
+            ctx.fillRect(this.width / -2, this.height / -2, this.width, this.height);  
+            ctx.restore();
+        }
+        this.newPos = function() {
+            if(this.x - this.width / 2 < 0 || (this.x + this.width / 2) > myGameArea.canvas.width) {
+                let positive = this.speedX > 0;
+                this.speedX = this.speedX * -1 + Math.random() * 2 - 1;
+                if(this.speedX > 10) {
+                    this.speedX = 10;
+                }
+                if(this.speedX < -10) {
+                    this.speedX = -10;
+                }
+                if(this.x - this.height / 2 < 0) {
+                    this.x = this.width / 2;
+                }
+                else if (this.x + this.width / 2 > myGameArea.canvas.width) {
+                    this.x = myGameArea.canvas.width - this.width / 2;
+                }
+            }
+            if(this.y - this.height / 2 < 0 || (this.y + this.height / 2) > myGameArea.canvas.height) {
+                let positive = this.speedY > 0;
+                this.speedY = this.speedY * -1 + Math.random() * 2 - 1;
+                if(this.speedY > 10) {
+                    this.speedY = 10;
+                }
+                if(this.speedY < -10) {
+                    this.speedY = -10;
+                }
+                if(this.y - this.height / 2 < 0) {
+                    this.y = this.height / 2;
+                }
+                else if (this.y + this.height / 2 > myGameArea.canvas.height) {
+                    this.y = myGameArea.canvas.height - this.height / 2;
+                }
+            }
+            this.x += this.speedX;
+            this.y += this.speedY;
+        }
+    }
+
+    function textComponent(text, variable, color, x, y, type) {
+        this.type = type;
+        this.text = text;
+        this.variable = variable;
+        this.color = color;
+        this.x = x;
+        this.y = y;
+        this.update = function() {
+            ctx = myGameArea.context;
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.fillStyle = color;
+            ctx.font = "16px Arial";
+            ctx.textAlign = "right";
+            ctx.fillText(this.text + ' ' + this.variable, 0, 0);
+            ctx.restore();
+        }
+        this.increase = function() {
+            this.variable++;
+        }
+    }
+
+    function updateGameArea() {
+        myGameArea.clear();
+        for (let i = 0; i < elemNum; i++) {
+            myGamePieces[i].newPos();
+            myGamePieces[i].update();
+        }
+        textComponent1.update();
+        textComponent2.update();
+    }
+
+    function startGame() {
+        for (let i = 0; i < elemNum; i++) {
+        speedX[i] = (Math.random() * 5 + 1) * (Math.random() > 0.5 ? 1 : -1);
+        speedY[i] = (Math.random() * 5 + 1) * (Math.random() > 0.5 ? 1 : -1);
+        startX[i] = Math.random() * (canvasWidth - rectangleWidth / 2) + rectangleWidth / 2;
+        startY[i] = Math.random() * (canvasHeight - rectangleHeight / 2) + rectangleHeight / 2;
+        myGamePieces[i] = new component(rectangleWidth, rectangleHeight, "red", startX[i], startY[i], speedX[i], speedY[i]);
+        }
+        textComponent1 = new textComponent('Broj generiranih elemenata:', elemNum, 'black', canvasWidth, 14, 'text');
+        textComponent2 = new textComponent('Broj kliknutih elemenata:', clickedElems, 'black', canvasWidth, 32, 'text');
+
+        myGameArea.start();
+    }
+
+    myGameArea.canvas.addEventListener("click", function(event) {
+        let rect = myGameArea.canvas.getBoundingClientRect();
+        let x = event.clientX - rect.left;
+        let y = event.clientY - rect.top;
+        for (let i = 0; i < elemNum; i++) {
+            if (x > myGamePieces[i].x - rectangleWidth / 2 && x < myGamePieces[i].x + rectangleWidth / 2 && y > myGamePieces[i].y - rectangleHeight / 2 && y < myGamePieces[i].y + rectangleHeight / 2) {
+                myGamePieces.splice(i, 1);
+                elemNum--;
+                textComponent2.increase();
+                audio.play();
+                break;
+            }
+        }
+    });
+
+</script>
+</html>
